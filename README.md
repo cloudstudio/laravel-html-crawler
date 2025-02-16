@@ -1,83 +1,236 @@
-# :package_description
+# Laravel HTML Crawler
 
-[![Latest Version on Packagist](https://img.shields.io/packagist/v/:vendor_slug/:package_slug.svg?style=flat-square)](https://packagist.org/packages/:vendor_slug/:package_slug)
-[![GitHub Tests Action Status](https://img.shields.io/github/actions/workflow/status/:vendor_slug/:package_slug/run-tests.yml?branch=main&label=tests&style=flat-square)](https://github.com/:vendor_slug/:package_slug/actions?query=workflow%3Arun-tests+branch%3Amain)
-[![GitHub Code Style Action Status](https://img.shields.io/github/actions/workflow/status/:vendor_slug/:package_slug/fix-php-code-style-issues.yml?branch=main&label=code%20style&style=flat-square)](https://github.com/:vendor_slug/:package_slug/actions?query=workflow%3A"Fix+PHP+code+style+issues"+branch%3Amain)
-[![Total Downloads](https://img.shields.io/packagist/dt/:vendor_slug/:package_slug.svg?style=flat-square)](https://packagist.org/packages/:vendor_slug/:package_slug)
-<!--delete-->
----
-This repo can be used to scaffold a Laravel package. Follow these steps to get started:
+A Laravel package for cleaning and transforming HTML content. It provides a fluent interface to remove unwanted elements like CSS, scripts, and more, with options to preserve specific elements and even convert the cleaned HTML to Markdown.
 
-1. Press the "Use this template" button at the top of this repo to create a new repo with the contents of this skeleton.
-2. Run "php ./configure.php" to run a script that will replace all placeholders throughout all the files.
-3. Have fun creating your package.
-4. If you need help creating a package, consider picking up our <a href="https://laravelpackage.training">Laravel Package Training</a> video course.
----
-<!--/delete-->
-This is where your description should go. Limit it to a paragraph or two. Consider adding a small example.
+## Features
 
-## Support us
-
-[<img src="https://github-ads.s3.eu-central-1.amazonaws.com/:package_name.jpg?t=1" width="419px" />](https://spatie.be/github-ad-click/:package_name)
-
-We invest a lot of resources into creating [best in class open source packages](https://spatie.be/open-source). You can support us by [buying one of our paid products](https://spatie.be/open-source/support-us).
-
-We highly appreciate you sending us a postcard from your hometown, mentioning which of our package(s) you are using. You'll find our address on [our contact page](https://spatie.be/about-us). We publish all received postcards on [our virtual postcard wall](https://spatie.be/open-source/postcards).
+- **Remove CSS** (inline styles and `<style>` blocks)
+- **Remove JavaScript** (inline scripts and `<script>` blocks)
+- **Preserve allowed tags** through a configurable list or helper methods
+- **Convert to Markdown** for quick text transformations
+- **Custom Regex Patterns** to remove specific parts of the HTML
+- **Whitespace Normalization** with an option to preserve newlines
 
 ## Installation
 
-You can install the package via composer:
+Install the package using Composer:
 
 ```bash
-composer require :vendor_slug/:package_slug
+composer require cloudstudio/laravel-html-crawler
 ```
 
-You can publish and run the migrations with:
+The package will automatically register itself in Laravel.
+
+To publish the configuration file, run:
 
 ```bash
-php artisan vendor:publish --tag=":package_slug-migrations"
-php artisan migrate
-```
-
-You can publish the config file with:
-
-```bash
-php artisan vendor:publish --tag=":package_slug-config"
-```
-
-This is the contents of the published config file:
-
-```php
-return [
-];
-```
-
-Optionally, you can publish the views using
-
-```bash
-php artisan vendor:publish --tag=":package_slug-views"
+php artisan vendor:publish --provider="CloudStudio\HtmlCrawler\HtmlCrawlerServiceProvider"
 ```
 
 ## Usage
 
+### 1. Basic HTML Cleaning
+
+By default, the package removes disallowed tags (for example, it will strip `<div>` tags and any tags not explicitly allowed):
+
 ```php
-$variable = new VendorName\Skeleton();
-echo $variable->echoPhrase('Hello, VendorName!');
+use CloudStudio\HtmlCrawler\HtmlCrawler;
+
+$html = '<div><p>Hello <strong>World</strong></p></div>';
+$cleanHtml = HtmlCrawler::fromHtml($html)->clean();
+
+// Expected output: "Hello World"
 ```
+
+### 2. Preserving Allowed Tags
+
+You can explicitly specify which tags to preserve:
+
+#### Using `setAllowedTags`
+
+```php
+use CloudStudio\HtmlCrawler\HtmlCrawler;
+
+$html = '<div><p>Hello <a href="#">World</a></p></div>';
+$cleanHtml = HtmlCrawler::fromHtml($html)
+    ->setAllowedTags(['p', 'a'])
+    ->clean();
+
+// Expected output: '<p>Hello <a href="#">World</a></p>'
+```
+
+#### Using Helper Methods
+
+The package offers helper methods to preserve groups of tags:
+
+```php
+use CloudStudio\HtmlCrawler\HtmlCrawler;
+
+$html = '<div><p>Hello <a href="#">World</a></p></div>';
+$cleanHtml = HtmlCrawler::fromHtml($html)
+    ->keepParagraphs()   // Preserves <p> tags
+    ->keepLinks()        // Preserves <a> tags
+    ->clean();
+
+// Expected output: '<p>Hello <a href="#">World</a></p>'
+```
+
+### 3. Handling Scripts
+
+#### Removing `<script>` by Default
+
+By default, `<script>` blocks are removed:
+
+```php
+use CloudStudio\HtmlCrawler\HtmlCrawler;
+
+$html = '<div><script>alert("x")</script><p>Test</p></div>';
+$cleanHtml = HtmlCrawler::fromHtml($html)->clean();
+
+// Expected output: "Test"
+```
+
+#### Preserving `<script>` with `keepScripts()`
+
+If you wish to keep `<script>` blocks, use the `keepScripts()` method:
+
+```php
+use CloudStudio\HtmlCrawler\HtmlCrawler;
+
+$html = '<div><script>alert("x")</script><p>Test</p></div>';
+$cleanHtml = HtmlCrawler::fromHtml($html)
+    ->keepScripts()
+    ->clean();
+
+// Expected output: '<script>alert("x")</script><p>Test</p>'
+```
+
+### 4. Handling CSS
+
+By default, `<style>` blocks and CSS links are removed. To preserve them, use `keepCss()`:
+
+```php
+use CloudStudio\HtmlCrawler\HtmlCrawler;
+
+$html = '<div><style>.text { color: red; }</style><p>Styled text</p></div>';
+$cleanHtml = HtmlCrawler::fromHtml($html)
+    ->keepCss()
+    ->clean();
+
+// Expected output: '<style>.text { color: red; }</style><p>Styled text</p>'
+```
+
+### 5. Using a Custom Regex Pattern
+
+If you need to remove specific parts of the HTML using a regular expression:
+
+```php
+use CloudStudio\HtmlCrawler\HtmlCrawler;
+
+$html = '<div><span class="remove">Remove me</span><p>Keep me</p></div>';
+$pattern = '/<span class="remove">.*?<\/span>/';
+$cleanHtml = HtmlCrawler::fromHtml($html)
+    ->useCustomPattern($pattern)
+    ->clean();
+
+// Expected output: '<p>Keep me</p>'
+```
+
+### 6. Converting to Markdown
+
+You can convert the cleaned HTML to Markdown:
+
+```php
+use CloudStudio\HtmlCrawler\HtmlCrawler;
+
+$html = '<h1>Title</h1><p>Paragraph text</p>';
+$markdown = HtmlCrawler::fromHtml($html)
+    ->withMarkdown()
+    ->clean();
+
+```
+
+### 7. Handling Newlines
+
+Control how newlines are handled in the HTML:
+
+```php
+use CloudStudio\HtmlCrawler\HtmlCrawler;
+
+$html = "Line 1\nLine 2";
+$cleanHtml = HtmlCrawler::fromHtml($html)
+    ->preserveNewlines(false)  // Set to false to replace newlines with spaces
+    ->clean();
+
+// Expected output: "Line 1 Line 2"
+```
+
+### 8. Loading HTML from a URL
+
+You can also load HTML directly from a URL:
+
+```php
+use CloudStudio\HtmlCrawler\HtmlCrawler;
+
+$cleanHtml = HtmlCrawler::fromUrl('https://example.com')
+    ->clean();
+
+// Output: the cleaned HTML content retrieved from the URL.
+```
+
+## Configuration
+
+The package includes a configuration file that allows you to define default options. After publishing the configuration file, you will find it at `config/html-crawler.php`:
+
+```php
+return [
+    'preserve_newlines'   => true,
+    'allowed_tags'        => [],
+    'convert_to_markdown' => false,
+    'remove_scripts'      => true,
+    'remove_styles'       => true,
+];
+```
+
+You can modify these values according to your needs.
+
+## Troubleshooting
+
+If you encounter the error:
+
+```
+BindingResolutionException: Target class [config] does not exist.
+```
+
+make sure your tests are running in a Laravel environment using **orchestra/testbench**. For package testing, install Testbench with:
+
+```bash
+composer require --dev orchestra/testbench
+```
+
+Then, set up your base test case to extend Testbench (see the package documentation for more details).
 
 ## Testing
 
+To run the tests, you can use:
+
 ```bash
-composer test
+./vendor/bin/pest
+```
+
+or if using PHPUnit:
+
+```bash
+./vendor/bin/phpunit
 ```
 
 ## Changelog
 
-Please see [CHANGELOG](CHANGELOG.md) for more information on what has changed recently.
+Please see the [CHANGELOG](CHANGELOG.md) for detailed information on recent changes.
 
 ## Contributing
 
-Please see [CONTRIBUTING](CONTRIBUTING.md) for details.
+Please refer to [CONTRIBUTING](.github/CONTRIBUTING.md) for details on how to contribute to this package.
 
 ## Security Vulnerabilities
 
@@ -85,9 +238,9 @@ Please review [our security policy](../../security/policy) on how to report secu
 
 ## Credits
 
-- [:author_name](https://github.com/:author_username)
+- [Cloud Studio](https://github.com/cloudstudio)
 - [All Contributors](../../contributors)
 
 ## License
 
-The MIT License (MIT). Please see [License File](LICENSE.md) for more information.
+This package is open-sourced software licensed under the [MIT license](LICENSE.md).
