@@ -18,7 +18,7 @@ class TagCleaner implements CleanerInterface
     /**
      * TagCleaner constructor.
      *
-     * @param array $allowedTags List of tags that are allowed in the HTML.
+     * @param  array  $allowedTags  List of tags that are allowed in the HTML.
      */
     public function __construct(array $allowedTags)
     {
@@ -28,7 +28,7 @@ class TagCleaner implements CleanerInterface
     /**
      * Clean the given HTML content by stripping disallowed tags.
      *
-     * @param string $html The HTML content to clean.
+     * @param  string  $html  The HTML content to clean.
      * @return string The cleaned HTML content.
      */
     public function clean(string $html): string
@@ -41,6 +41,7 @@ class TagCleaner implements CleanerInterface
         foreach ($this->allowedTags as $tag) {
             $allowed .= "<{$tag}>";
         }
+
         return strip_tags($html, $allowed);
     }
 }

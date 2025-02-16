@@ -18,7 +18,7 @@ class CustomPatternCleaner implements CleanerInterface
     /**
      * CustomPatternCleaner constructor.
      *
-     * @param string|null $pattern The regex pattern to apply for cleaning.
+     * @param  string|null  $pattern  The regex pattern to apply for cleaning.
      */
     public function __construct(?string $pattern)
     {
@@ -28,7 +28,7 @@ class CustomPatternCleaner implements CleanerInterface
     /**
      * Clean the given HTML content by applying the custom regex pattern.
      *
-     * @param string $html The HTML content to clean.
+     * @param  string  $html  The HTML content to clean.
      * @return string The cleaned HTML content.
      */
     public function clean(string $html): string
@@ -36,6 +36,7 @@ class CustomPatternCleaner implements CleanerInterface
         if ($this->pattern) {
             return preg_replace($this->pattern, '', $html);
         }
+
         return $html;
     }
 }
