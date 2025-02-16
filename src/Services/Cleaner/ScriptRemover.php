@@ -23,8 +23,8 @@ class ScriptRemover implements CleanerInterface
     /**
      * ScriptRemover constructor.
      *
-     * @param bool $remove Indicates whether to remove <script> tags.
-     * @param array $allowedTags List of tags that are allowed in the HTML.
+     * @param  bool  $remove  Indicates whether to remove <script> tags.
+     * @param  array  $allowedTags  List of tags that are allowed in the HTML.
      */
     public function __construct(bool $remove, array $allowedTags)
     {
@@ -35,14 +35,15 @@ class ScriptRemover implements CleanerInterface
     /**
      * Clean the given HTML content by removing <script> tags if specified.
      *
-     * @param string $html The HTML content to clean.
+     * @param  string  $html  The HTML content to clean.
      * @return string The cleaned HTML content.
      */
     public function clean(string $html): string
     {
-        if ($this->remove && !in_array('script', $this->allowedTags)) {
+        if ($this->remove && ! in_array('script', $this->allowedTags)) {
             return preg_replace('#<script.*?</script>#is', '', $html);
         }
+
         return $html;
     }
 }

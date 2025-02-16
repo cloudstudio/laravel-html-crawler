@@ -19,7 +19,7 @@ class WhitespaceNormalizer implements CleanerInterface
     /**
      * WhitespaceNormalizer constructor.
      *
-     * @param bool $preserveNewlines Indicates whether to preserve newlines.
+     * @param  bool  $preserveNewlines  Indicates whether to preserve newlines.
      */
     public function __construct(bool $preserveNewlines)
     {
@@ -32,7 +32,7 @@ class WhitespaceNormalizer implements CleanerInterface
      * This method collapses multiple spaces into a single space and
      * preserves newlines if specified.
      *
-     * @param string $html The HTML content to clean.
+     * @param  string  $html  The HTML content to clean.
      * @return string The cleaned HTML content with normalized whitespace.
      */
     public function clean(string $html): string

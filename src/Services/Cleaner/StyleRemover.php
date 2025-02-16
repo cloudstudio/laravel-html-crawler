@@ -23,8 +23,8 @@ class StyleRemover implements CleanerInterface
     /**
      * StyleRemover constructor.
      *
-     * @param bool $remove Indicates whether to remove <style> tags.
-     * @param array $allowedTags List of tags that are allowed in the HTML.
+     * @param  bool  $remove  Indicates whether to remove <style> tags.
+     * @param  array  $allowedTags  List of tags that are allowed in the HTML.
      */
     public function __construct(bool $remove, array $allowedTags)
     {
@@ -35,14 +35,15 @@ class StyleRemover implements CleanerInterface
     /**
      * Clean the given HTML content by removing <style> tags if specified.
      *
-     * @param string $html The HTML content to clean.
+     * @param  string  $html  The HTML content to clean.
      * @return string The cleaned HTML content.
      */
     public function clean(string $html): string
     {
-        if ($this->remove && !in_array('style', $this->allowedTags)) {
+        if ($this->remove && ! in_array('style', $this->allowedTags)) {
             return preg_replace('#<style.*?</style>#is', '', $html);
         }
+
         return $html;
     }
 }

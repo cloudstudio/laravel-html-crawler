@@ -8,8 +8,8 @@ use Spatie\LaravelPackageTools\PackageServiceProvider;
 /**
  * Class HtmlCrawlerServiceProvider
  *
- * Service provider for the HtmlCrawler package. 
- * Responsible for configuring the package, including 
+ * Service provider for the HtmlCrawler package.
+ * Responsible for configuring the package, including
  * setting up configuration files and views.
  */
 class HtmlCrawlerServiceProvider extends PackageServiceProvider
@@ -17,8 +17,7 @@ class HtmlCrawlerServiceProvider extends PackageServiceProvider
     /**
      * Configure the package.
      *
-     * @param Package $package The package instance to configure.
-     * @return void
+     * @param  Package  $package  The package instance to configure.
      */
     public function configurePackage(Package $package): void
     {
@@ -32,13 +31,11 @@ class HtmlCrawlerServiceProvider extends PackageServiceProvider
      *
      * This method binds the HtmlCrawler class to the service container
      * and creates an alias for easier access.
-     *
-     * @return void
      */
     public function packageRegistered(): void
     {
         $this->app->singleton(HtmlCrawler::class, function ($app) {
-            return new HtmlCrawler();
+            return new HtmlCrawler;
         });
 
         $this->app->alias(HtmlCrawler::class, 'html-crawler');

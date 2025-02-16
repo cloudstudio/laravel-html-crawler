@@ -10,50 +10,36 @@ class HtmlCrawler
 {
     /**
      * The original HTML content.
-     *
-     * @var string
      */
     protected string $html;
 
     /**
      * Array of allowed HTML tags (e.g. ['p', 'a', 'h1']).
-     *
-     * @var array
      */
     protected array $allowedTags = [];
 
     /**
      * A custom regex pattern to remove parts of the HTML.
-     *
-     * @var string|null
      */
     protected ?string $customPattern = null;
 
     /**
      * Whether to preserve newlines in the output.
-     *
-     * @var bool
      */
     protected bool $preserveNewlines;
 
     /**
      * Whether to convert the cleaned HTML to Markdown.
-     *
-     * @var bool
      */
     protected bool $convertToMarkdown;
 
     /**
      * Whether to remove script blocks by default.
-     *
-     * @var bool
      */
     protected bool $removeScripts;
 
     /**
      * Whether to remove style blocks by default.
-     *
-     * @var bool
      */
     protected bool $removeStyles;
 
@@ -64,30 +50,29 @@ class HtmlCrawler
      */
     public function __construct()
     {
-        $this->preserveNewlines   = config('htmlcrawler.preserve_newlines', true);
-        $this->allowedTags        = config('htmlcrawler.allowed_tags', []);
-        $this->convertToMarkdown  = config('htmlcrawler.convert_to_markdown', false);
-        $this->removeScripts      = config('htmlcrawler.remove_scripts', true);
-        $this->removeStyles       = config('htmlcrawler.remove_styles', true);
+        $this->preserveNewlines = config('htmlcrawler.preserve_newlines', true);
+        $this->allowedTags = config('htmlcrawler.allowed_tags', []);
+        $this->convertToMarkdown = config('htmlcrawler.convert_to_markdown', false);
+        $this->removeScripts = config('htmlcrawler.remove_scripts', true);
+        $this->removeStyles = config('htmlcrawler.remove_styles', true);
     }
 
     /**
      * Initialize the crawler with an HTML string.
      *
-     * @param string $html
      * @return static
      */
     public static function fromHtml(string $html): self
     {
-        $instance = new self();
+        $instance = new self;
         $instance->html = $html;
+
         return $instance;
     }
 
     /**
      * Initialize the crawler with HTML loaded from a URL.
      *
-     * @param string $url
      * @return static
      *
      * @throws InvalidUrlException
@@ -95,7 +80,7 @@ class HtmlCrawler
      */
     public static function fromUrl(string $url): self
     {
-        if (!filter_var($url, FILTER_VALIDATE_URL)) {
+        if (! filter_var($url, FILTER_VALIDATE_URL)) {
             throw new InvalidUrlException("Invalid URL provided: {$url}");
         }
 
@@ -110,25 +95,26 @@ class HtmlCrawler
     /**
      * Specify which HTML tags should be preserved.
      *
-     * @param string|array $tags A tag or an array of tags (e.g., 'p' or ['p', 'a']).
+     * @param  string|array  $tags  A tag or an array of tags (e.g., 'p' or ['p', 'a']).
      * @return $this
      */
     public function keepTags(string|array $tags): self
     {
         $tags = is_array($tags) ? $tags : [$tags];
         $this->allowedTags = array_unique(array_merge($this->allowedTags, $tags));
+
         return $this;
     }
 
     /**
      * Replace the allowed tags list with a new set.
      *
-     * @param array $tags
      * @return $this
      */
     public function setAllowedTags(array $tags): self
     {
         $this->allowedTags = $tags;
+
         return $this;
     }
 
@@ -201,9 +187,10 @@ class HtmlCrawler
     public function keepScripts(): self
     {
         $this->removeScripts = false;
-        if (!in_array('script', $this->allowedTags)) {
+        if (! in_array('script', $this->allowedTags)) {
             $this->allowedTags[] = 'script';
         }
+
         return $this;
     }
 
@@ -216,12 +203,13 @@ class HtmlCrawler
     public function keepCss(): self
     {
         $this->removeStyles = false;
-        if (!in_array('style', $this->allowedTags)) {
+        if (! in_array('style', $this->allowedTags)) {
             $this->allowedTags[] = 'style';
         }
-        if (!in_array('link', $this->allowedTags)) {
+        if (! in_array('link', $this->allowedTags)) {
             $this->allowedTags[] = 'link';
         }
+
         return $this;
     }
 
@@ -229,24 +217,24 @@ class HtmlCrawler
      * Set a custom regex pattern to remove parts of the HTML.
      * This pattern takes precedence over allowed tags.
      *
-     * @param string $pattern
      * @return $this
      */
     public function useCustomPattern(string $pattern): self
     {
         $this->customPattern = $pattern;
+
         return $this;
     }
 
     /**
      * Set whether to preserve newlines.
      *
-     * @param bool $preserve
      * @return $this
      */
     public function preserveNewlines(bool $preserve = true): self
     {
         $this->preserveNewlines = $preserve;
+
         return $this;
     }
 
@@ -258,6 +246,7 @@ class HtmlCrawler
     public function withMarkdown(): self
     {
         $this->convertToMarkdown = true;
+
         return $this;
     }
 
@@ -269,7 +258,7 @@ class HtmlCrawler
      */
     public function clean(): string
     {
-        $cleaner = new HtmlCleaner();
+        $cleaner = new HtmlCleaner;
         $result = $cleaner->clean(
             $this->html,
             $this->allowedTags,
@@ -288,8 +277,6 @@ class HtmlCrawler
 
     /**
      * Magic method to return the cleaned content when the object is treated as a string.
-     *
-     * @return string
      */
     public function __toString(): string
     {
