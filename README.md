@@ -34,7 +34,7 @@ php artisan vendor:publish --provider="CloudStudio\HtmlCrawler\HtmlCrawlerServic
 By default, the package removes disallowed tags (for example, it will strip `<div>` tags and any tags not explicitly allowed):
 
 ```php
-use CloudStudio\HtmlCrawler\HtmlCrawler;
+use CloudStudio\HtmlCrawler\Facades\HtmlCrawler;
 
 $html = '<div><p>Hello <strong>World</strong></p></div>';
 $cleanHtml = HtmlCrawler::fromHtml($html)->clean();
@@ -49,7 +49,7 @@ You can explicitly specify which tags to preserve:
 #### Using `setAllowedTags`
 
 ```php
-use CloudStudio\HtmlCrawler\HtmlCrawler;
+use CloudStudio\HtmlCrawler\Facades\HtmlCrawler;
 
 $html = '<div><p>Hello <a href="#">World</a></p></div>';
 $cleanHtml = HtmlCrawler::fromHtml($html)
@@ -64,7 +64,7 @@ $cleanHtml = HtmlCrawler::fromHtml($html)
 The package offers helper methods to preserve groups of tags:
 
 ```php
-use CloudStudio\HtmlCrawler\HtmlCrawler;
+use CloudStudio\HtmlCrawler\Facades\HtmlCrawler;
 
 $html = '<div><p>Hello <a href="#">World</a></p></div>';
 $cleanHtml = HtmlCrawler::fromHtml($html)
@@ -82,7 +82,7 @@ $cleanHtml = HtmlCrawler::fromHtml($html)
 By default, `<script>` blocks are removed:
 
 ```php
-use CloudStudio\HtmlCrawler\HtmlCrawler;
+use CloudStudio\HtmlCrawler\Facades\HtmlCrawler;
 
 $html = '<div><script>alert("x")</script><p>Test</p></div>';
 $cleanHtml = HtmlCrawler::fromHtml($html)->clean();
@@ -95,7 +95,7 @@ $cleanHtml = HtmlCrawler::fromHtml($html)->clean();
 If you wish to keep `<script>` blocks, use the `keepScripts()` method:
 
 ```php
-use CloudStudio\HtmlCrawler\HtmlCrawler;
+use CloudStudio\HtmlCrawler\Facades\HtmlCrawler;
 
 $html = '<div><script>alert("x")</script><p>Test</p></div>';
 $cleanHtml = HtmlCrawler::fromHtml($html)
@@ -110,7 +110,7 @@ $cleanHtml = HtmlCrawler::fromHtml($html)
 By default, `<style>` blocks and CSS links are removed. To preserve them, use `keepCss()`:
 
 ```php
-use CloudStudio\HtmlCrawler\HtmlCrawler;
+use CloudStudio\HtmlCrawler\Facades\HtmlCrawler;
 
 $html = '<div><style>.text { color: red; }</style><p>Styled text</p></div>';
 $cleanHtml = HtmlCrawler::fromHtml($html)
@@ -125,7 +125,7 @@ $cleanHtml = HtmlCrawler::fromHtml($html)
 If you need to remove specific parts of the HTML using a regular expression:
 
 ```php
-use CloudStudio\HtmlCrawler\HtmlCrawler;
+use CloudStudio\HtmlCrawler\Facades\HtmlCrawler;
 
 $html = '<div><span class="remove">Remove me</span><p>Keep me</p></div>';
 $pattern = '/<span class="remove">.*?<\/span>/';
@@ -141,7 +141,7 @@ $cleanHtml = HtmlCrawler::fromHtml($html)
 You can convert the cleaned HTML to Markdown:
 
 ```php
-use CloudStudio\HtmlCrawler\HtmlCrawler;
+use CloudStudio\HtmlCrawler\Facades\HtmlCrawler;
 
 $html = '<h1>Title</h1><p>Paragraph text</p>';
 $markdown = HtmlCrawler::fromHtml($html)
@@ -155,7 +155,7 @@ $markdown = HtmlCrawler::fromHtml($html)
 Control how newlines are handled in the HTML:
 
 ```php
-use CloudStudio\HtmlCrawler\HtmlCrawler;
+use CloudStudio\HtmlCrawler\Facades\HtmlCrawler;
 
 $html = "Line 1\nLine 2";
 $cleanHtml = HtmlCrawler::fromHtml($html)
@@ -170,7 +170,7 @@ $cleanHtml = HtmlCrawler::fromHtml($html)
 You can also load HTML directly from a URL:
 
 ```php
-use CloudStudio\HtmlCrawler\HtmlCrawler;
+use CloudStudio\HtmlCrawler\Facades\HtmlCrawler;
 
 $cleanHtml = HtmlCrawler::fromUrl('https://example.com')
     ->clean();
